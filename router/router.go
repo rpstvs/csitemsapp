@@ -2,11 +2,20 @@ package router
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/rpstvs/csitemsapp/internals/routes"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func SetupRoutes(app *fiber.App) {
-	api := app.Group("/api")
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("welcome to my cs2 skins app.")
+	})
 
-	routes.SetupSkinsRoutes(api)
+	api := app.Group("/api", logger.New())
+
+	skins := api.Group("/skins")
+
+	skins.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("this is the skins endpoint")
+	})
+
 }
