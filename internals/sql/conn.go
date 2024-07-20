@@ -6,12 +6,11 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"github.com/rpstvs/csitemsapp/internals/database"
 )
 
-var DB *database.Queries
-
-func CreateDB() {
+func CreateDBInstance() *database.Queries {
 
 	godotenv.Load(".env")
 	dbURL := os.Getenv("DATABASE_URL")
@@ -20,5 +19,7 @@ func CreateDB() {
 	if err != nil {
 		log.Printf("Couldnt connect to database")
 	}
-	DB = database.New(db)
+	DB := database.New(db)
+
+	return DB
 }

@@ -10,9 +10,12 @@ import (
 var DB *database.Queries
 
 func main() {
+
+	db := sql.CreateDBInstance()
 	app := fiber.New()
-	router.SetupRoutes(app)
-	sql.CreateDB()
+
+	router.SetupRoutes(app, db)
+
 	app.Listen(":8080")
 
 }
