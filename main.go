@@ -7,7 +7,9 @@ import (
 	"github.com/rpstvs/csitemsapp/router"
 )
 
-var DB *database.Queries
+type DB struct {
+	Db database.Queries
+}
 
 func main() {
 

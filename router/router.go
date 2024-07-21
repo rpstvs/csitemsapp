@@ -20,4 +20,8 @@ func SetupRoutes(app *fiber.App, db *database.Queries) {
 		return handlers.GetSkins(c, db)
 	})
 
+	skins.Get("/Best", func(c *fiber.Ctx) error {
+		return handlers.GetBestITems(c, db)
+	})
+
 }

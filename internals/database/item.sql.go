@@ -51,3 +51,16 @@ func (q *Queries) GetItemsIds(ctx context.Context) ([]uuid.UUID, error) {
 	}
 	return items, nil
 }
+
+const getNameById = `-- name: GetNameById :one
+SELECT Itemname
+FROM Items
+WHERE Id = $1
+`
+
+func (q *Queries) GetNameById(ctx context.Context, id uuid.UUID) (string, error) {
+	row := q.db.QueryRowContext(ctx, getNameById, id)
+	var itemname string
+	err := row.Scan(&itemname)
+	return itemname, err
+}

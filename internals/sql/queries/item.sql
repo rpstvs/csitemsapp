@@ -5,3 +5,7 @@ FROM Items;
 SELECT Id
 FROM Items
 WHERE itemname = $1;
+-- name: GetNameById :one
+SELECT Itemname
+FROM Items
+WHERE Id = $1;

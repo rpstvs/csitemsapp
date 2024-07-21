@@ -11,6 +11,42 @@ import (
 	"github.com/google/uuid"
 )
 
+const getBestItems = `-- name: GetBestItems :many
+SELECT Item_id,
+    Price
+FROM Prices
+ORDER BY Price DESC
+LIMIT 5
+`
+
+type GetBestItemsRow struct {
+	ItemID uuid.UUID
+	Price  float64
+}
+
+func (q *Queries) GetBestItems(ctx context.Context) ([]GetBestItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getBestItems)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetBestItemsRow
+	for rows.Next() {
+		var i GetBestItemsRow
+		if err := rows.Scan(&i.ItemID, &i.Price); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPricebyID = `-- name: GetPricebyID :one
 SELECT Price
 FROM Prices
