@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -42,6 +43,41 @@ func (q *Queries) GetItemsIds(ctx context.Context) ([]uuid.UUID, error) {
 			return nil, err
 		}
 		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getItemsRecord = `-- name: GetItemsRecord :many
+SELECT Itemname,
+    Prices.Price
+FROM Items
+    LEFT JOIN Prices ON Items.Id = Prices.Item_id
+`
+
+type GetItemsRecordRow struct {
+	Itemname string
+	Price    sql.NullString
+}
+
+func (q *Queries) GetItemsRecord(ctx context.Context) ([]GetItemsRecordRow, error) {
+	rows, err := q.db.QueryContext(ctx, getItemsRecord)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetItemsRecordRow
+	for rows.Next() {
+		var i GetItemsRecordRow
+		if err := rows.Scan(&i.Itemname, &i.Price); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

@@ -9,3 +9,8 @@ WHERE itemname = $1;
 SELECT Itemname
 FROM Items
 WHERE Id = $1;
+-- name: GetItemsRecord :many
+SELECT Itemname,
+    Prices.Price
+FROM Items
+    LEFT JOIN Prices ON Items.Id = Prices.Item_id;
