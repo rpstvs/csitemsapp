@@ -100,3 +100,17 @@ func (q *Queries) GetNameById(ctx context.Context, id uuid.UUID) (string, error)
 	err := row.Scan(&itemname)
 	return itemname, err
 }
+
+const getPriceHistory = `-- name: GetPriceHistory :one
+SELECT Prices.Price
+FROM Items
+    LEFT JOIN Prices ON Items.Id = Prices.Item_id
+WHERE Itemname = $1
+`
+
+func (q *Queries) GetPriceHistory(ctx context.Context, itemname string) (sql.NullString, error) {
+	row := q.db.QueryRowContext(ctx, getPriceHistory, itemname)
+	var price sql.NullString
+	err := row.Scan(&price)
+	return price, err
+}
