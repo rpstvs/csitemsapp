@@ -13,4 +13,4 @@ sql:
             nullable: false
           - db_type: "numeric"
             go_type: "sql.NullFloat64"
-            nullable: true
+            nullable: false

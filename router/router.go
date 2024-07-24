@@ -24,4 +24,8 @@ func SetupRoutes(app *fiber.App, db *database.Queries) {
 		return handlers.GetItems(c, db)
 	})
 
+	skins.Get("/history", func(c *fiber.Ctx) error {
+		return handlers.GetPriceHistory(c, db)
+	})
+
 }

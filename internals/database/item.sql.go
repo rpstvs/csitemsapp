@@ -102,15 +102,15 @@ func (q *Queries) GetNameById(ctx context.Context, id uuid.UUID) (string, error)
 }
 
 const getPriceHistory = `-- name: GetPriceHistory :one
-SELECT Prices.Price
+SELECT CAST (Prices.Price AS NUMERIC(10, 2))
 FROM Items
     LEFT JOIN Prices ON Items.Id = Prices.Item_id
 WHERE Itemname = $1
 `
 
-func (q *Queries) GetPriceHistory(ctx context.Context, itemname string) (sql.NullString, error) {
+func (q *Queries) GetPriceHistory(ctx context.Context, itemname string) (float64, error) {
 	row := q.db.QueryRowContext(ctx, getPriceHistory, itemname)
-	var price sql.NullString
-	err := row.Scan(&price)
-	return price, err
+	var prices_price float64
+	err := row.Scan(&prices_price)
+	return prices_price, err
 }

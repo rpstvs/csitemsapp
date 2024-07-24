@@ -15,7 +15,7 @@ SELECT Itemname,
 FROM Items
     LEFT JOIN Prices ON Items.Id = Prices.Item_id;
 -- name: GetPriceHistory :one
-SELECT Prices.Price
+SELECT CAST (Prices.Price AS NUMERIC(10, 2))
 FROM Items
     LEFT JOIN Prices ON Items.Id = Prices.Item_id
 WHERE Itemname = $1;
