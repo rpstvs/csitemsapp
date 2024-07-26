@@ -28,4 +28,8 @@ func SetupRoutes(app *fiber.App, db *database.Queries) {
 		return handlers.GetPriceHistory(c, db)
 	})
 
+	skins.Get("/CallbackLogin", func(c *fiber.Ctx) error {
+		return handlers.CallbackLogin(c)
+	})
+
 }
