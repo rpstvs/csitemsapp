@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/rpstvs/csitemsapp/internals/auth"
 )
 
 func CallbackLogin(c *fiber.Ctx) error {
@@ -41,7 +41,14 @@ func CallbackLogin(c *fiber.Ctx) error {
 		return nil
 	}
 
-	fmt.Println("We are loggedin")
+	steamLink := c.Query("openid.claimed_id")
+
+	tmp := strings.Split(steamLink, "/")
+	id := tmp[len(tmp)-1]
+
+	token := auth.CreateToken(id)
+	cookie := auth.CreateCookie(token)
+	c.Cookie(&cookie)
 	c.Redirect("/api/skins/Best")
 	return nil
 }
