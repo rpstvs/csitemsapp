@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/rpstvs/csitemsapp/internals/auth"
 	"github.com/rpstvs/csitemsapp/internals/database"
 	"github.com/rpstvs/csitemsapp/internals/handlers"
 )
@@ -30,6 +31,9 @@ func SetupRoutes(app *fiber.App, db *database.Queries) {
 
 	skins.Get("/CallbackLogin", func(c *fiber.Ctx) error {
 		return handlers.CallbackLogin(c)
+	})
+	skins.Get("/profile", auth.MiddlewareCookie("SkinsApp"), func(c *fiber.Ctx) error {
+		return handlers.Profile(c)
 	})
 
 }
