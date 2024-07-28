@@ -4,7 +4,10 @@ FROM Prices
 WHERE Item_id = $1;
 -- name: GetBestItems :many
 SELECT Item_id,
-    Price
+    Price,
+    Items.ItemName
 FROM Prices
-ORDER BY Price DESC
+    LEFT JOIN Items ON Prices.Item_id = Items.Id
+ORDER BY Price DESC,
+    PriceDate DESC
 LIMIT 5;

@@ -7,21 +7,26 @@ package database
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
 
 const getBestItems = `-- name: GetBestItems :many
 SELECT Item_id,
-    Price
+    Price,
+    Items.ItemName
 FROM Prices
-ORDER BY Price DESC
+    LEFT JOIN Items ON Prices.Item_id = Items.Id
+ORDER BY Price DESC,
+    PriceDate DESC
 LIMIT 5
 `
 
 type GetBestItemsRow struct {
-	ItemID uuid.UUID
-	Price  float64
+	ItemID   uuid.UUID
+	Price    float64
+	Itemname sql.NullString
 }
 
 func (q *Queries) GetBestItems(ctx context.Context) ([]GetBestItemsRow, error) {
@@ -33,7 +38,7 @@ func (q *Queries) GetBestItems(ctx context.Context) ([]GetBestItemsRow, error) {
 	var items []GetBestItemsRow
 	for rows.Next() {
 		var i GetBestItemsRow
-		if err := rows.Scan(&i.ItemID, &i.Price); err != nil {
+		if err := rows.Scan(&i.ItemID, &i.Price, &i.Itemname); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

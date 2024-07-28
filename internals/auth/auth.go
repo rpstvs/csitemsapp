@@ -26,7 +26,7 @@ func CreateToken(name string) string {
 }
 
 func ValidateToken(tokenString string) error {
-	tokenSecret := os.Getenv("TOKEN_SECRET")
+	tokenSecret := os.Getenv("SECRET_KEY")
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(tokenSecret), nil
 	})

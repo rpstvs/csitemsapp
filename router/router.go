@@ -10,7 +10,7 @@ import (
 
 func SetupRoutes(app *fiber.App, db *database.Queries) {
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("welcome to my cs2 skins app.")
+		return handlers.HomePage(c, db)
 	})
 
 	api := app.Group("/api", logger.New())
