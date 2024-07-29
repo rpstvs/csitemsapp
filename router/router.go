@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/rpstvs/csitemsapp/internals/auth"
 	"github.com/rpstvs/csitemsapp/internals/database"
@@ -9,6 +10,7 @@ import (
 )
 
 func SetupRoutes(app *fiber.App, db *database.Queries) {
+	app.Use(cors.New())
 	app.Get("/", func(c *fiber.Ctx) error {
 		return handlers.HomePage(c, db)
 	})
@@ -21,8 +23,12 @@ func SetupRoutes(app *fiber.App, db *database.Queries) {
 		return handlers.GetSkins(c, db)
 	})
 
-	skins.Get("/Best", func(c *fiber.Ctx) error {
+	skins.Get("/best", func(c *fiber.Ctx) error {
 		return handlers.GetItems(c, db)
+	})
+
+	skins.Get("/worst", func(c *fiber.Ctx) error {
+		return handlers.WorstItems(c, db)
 	})
 
 	skins.Post("/history", func(c *fiber.Ctx) error {

@@ -64,3 +64,43 @@ func (q *Queries) GetPricebyID(ctx context.Context, itemID uuid.UUID) (float64, 
 	err := row.Scan(&price)
 	return price, err
 }
+
+const getWorstItems = `-- name: GetWorstItems :many
+SELECT Item_id,
+    Price,
+    Items.ItemName
+FROM Prices
+    LEFT JOIN Items ON Prices.Item_id = Items.Id
+ORDER BY Price ASC,
+    PriceDate DESC
+LIMIT 5
+`
+
+type GetWorstItemsRow struct {
+	ItemID   uuid.UUID
+	Price    float64
+	Itemname sql.NullString
+}
+
+func (q *Queries) GetWorstItems(ctx context.Context) ([]GetWorstItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getWorstItems)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetWorstItemsRow
+	for rows.Next() {
+		var i GetWorstItemsRow
+		if err := rows.Scan(&i.ItemID, &i.Price, &i.Itemname); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

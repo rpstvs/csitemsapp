@@ -11,3 +11,12 @@ FROM Prices
 ORDER BY Price DESC,
     PriceDate DESC
 LIMIT 5;
+-- name: GetWorstItems :many
+SELECT Item_id,
+    Price,
+    Items.ItemName
+FROM Prices
+    LEFT JOIN Items ON Prices.Item_id = Items.Id
+ORDER BY Price ASC,
+    PriceDate DESC
+LIMIT 5;
