@@ -7,7 +7,6 @@ package database
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -15,18 +14,21 @@ import (
 const getBestItems = `-- name: GetBestItems :many
 SELECT Item_id,
     Price,
-    Items.ItemName
+    Items.ItemName,
+    CAST (Items.DayChange AS NUMERIC(10, 2))
 FROM Prices
-    LEFT JOIN Items ON Prices.Item_id = Items.Id
-ORDER BY Price DESC,
+    INNER JOIN Items ON Prices.Item_id = Items.Id
+WHERE Items.DayChange IS NOT NULL
+ORDER BY Items.DayChange DESC,
     PriceDate DESC
 LIMIT 5
 `
 
 type GetBestItemsRow struct {
-	ItemID   uuid.UUID
-	Price    float64
-	Itemname sql.NullString
+	ItemID         uuid.UUID
+	Price          float64
+	Itemname       string
+	ItemsDaychange float64
 }
 
 func (q *Queries) GetBestItems(ctx context.Context) ([]GetBestItemsRow, error) {
@@ -38,7 +40,12 @@ func (q *Queries) GetBestItems(ctx context.Context) ([]GetBestItemsRow, error) {
 	var items []GetBestItemsRow
 	for rows.Next() {
 		var i GetBestItemsRow
-		if err := rows.Scan(&i.ItemID, &i.Price, &i.Itemname); err != nil {
+		if err := rows.Scan(
+			&i.ItemID,
+			&i.Price,
+			&i.Itemname,
+			&i.ItemsDaychange,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -68,18 +75,20 @@ func (q *Queries) GetPricebyID(ctx context.Context, itemID uuid.UUID) (float64, 
 const getWorstItems = `-- name: GetWorstItems :many
 SELECT Item_id,
     Price,
-    Items.ItemName
+    Items.ItemName,
+    CAST (Items.DayChange AS NUMERIC(10, 2))
 FROM Prices
-    LEFT JOIN Items ON Prices.Item_id = Items.Id
-ORDER BY Price ASC,
+    INNER JOIN Items ON Prices.Item_id = Items.Id
+ORDER BY Items.DayChange ASC,
     PriceDate DESC
 LIMIT 5
 `
 
 type GetWorstItemsRow struct {
-	ItemID   uuid.UUID
-	Price    float64
-	Itemname sql.NullString
+	ItemID         uuid.UUID
+	Price          float64
+	Itemname       string
+	ItemsDaychange float64
 }
 
 func (q *Queries) GetWorstItems(ctx context.Context) ([]GetWorstItemsRow, error) {
@@ -91,7 +100,12 @@ func (q *Queries) GetWorstItems(ctx context.Context) ([]GetWorstItemsRow, error)
 	var items []GetWorstItemsRow
 	for rows.Next() {
 		var i GetWorstItemsRow
-		if err := rows.Scan(&i.ItemID, &i.Price, &i.Itemname); err != nil {
+		if err := rows.Scan(
+			&i.ItemID,
+			&i.Price,
+			&i.Itemname,
+			&i.ItemsDaychange,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

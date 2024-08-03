@@ -11,8 +11,10 @@ import (
 )
 
 type Item struct {
-	ID       uuid.UUID
-	Itemname string
+	ID         uuid.UUID
+	Itemname   string
+	Daychange  float64
+	Weekchange float64
 }
 
 type Price struct {
