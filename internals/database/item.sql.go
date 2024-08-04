@@ -12,6 +12,45 @@ import (
 	"github.com/google/uuid"
 )
 
+const getBestItems = `-- name: GetBestItems :many
+SELECT ItemName,
+    Id,
+    CAST (DayChange AS NUMERIC(10, 2))
+FROM Items
+WHERE DayChange IS NOT NULL
+ORDER BY DayChange DESC
+LIMIT 5
+`
+
+type GetBestItemsRow struct {
+	Itemname  string
+	ID        uuid.UUID
+	Daychange float64
+}
+
+func (q *Queries) GetBestItems(ctx context.Context) ([]GetBestItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getBestItems)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetBestItemsRow
+	for rows.Next() {
+		var i GetBestItemsRow
+		if err := rows.Scan(&i.Itemname, &i.ID, &i.Daychange); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getItemByName = `-- name: GetItemByName :one
 SELECT Id
 FROM Items
@@ -113,4 +152,42 @@ func (q *Queries) GetPriceHistory(ctx context.Context, itemname string) (float64
 	var prices_price float64
 	err := row.Scan(&prices_price)
 	return prices_price, err
+}
+
+const getWorstItems = `-- name: GetWorstItems :many
+SELECT ItemName,
+    Id,
+    CAST (DayChange AS NUMERIC(10, 2))
+FROM Items
+ORDER BY DayChange ASC
+LIMIT 5
+`
+
+type GetWorstItemsRow struct {
+	Itemname  string
+	ID        uuid.UUID
+	Daychange float64
+}
+
+func (q *Queries) GetWorstItems(ctx context.Context) ([]GetWorstItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getWorstItems)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetWorstItemsRow
+	for rows.Next() {
+		var i GetWorstItemsRow
+		if err := rows.Scan(&i.Itemname, &i.ID, &i.Daychange); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

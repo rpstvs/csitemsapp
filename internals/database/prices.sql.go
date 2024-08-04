@@ -11,58 +11,31 @@ import (
 	"github.com/google/uuid"
 )
 
-const getBestItems = `-- name: GetBestItems :many
-SELECT Item_id,
-    Price,
-    Items.ItemName,
-    CAST (Items.DayChange AS NUMERIC(10, 2))
+const getLatestPrice = `-- name: GetLatestPrice :one
+SELECT Price,
+    Item_id
 FROM Prices
-    INNER JOIN Items ON Prices.Item_id = Items.Id
-WHERE Items.DayChange IS NOT NULL
-ORDER BY Items.DayChange DESC,
-    PriceDate DESC
-LIMIT 5
+WHERE Item_id = $1
+ORDER BY PriceDate DESC
 `
 
-type GetBestItemsRow struct {
-	ItemID         uuid.UUID
-	Price          float64
-	Itemname       string
-	ItemsDaychange float64
+type GetLatestPriceRow struct {
+	Price  float64
+	ItemID uuid.UUID
 }
 
-func (q *Queries) GetBestItems(ctx context.Context) ([]GetBestItemsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getBestItems)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetBestItemsRow
-	for rows.Next() {
-		var i GetBestItemsRow
-		if err := rows.Scan(
-			&i.ItemID,
-			&i.Price,
-			&i.Itemname,
-			&i.ItemsDaychange,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) GetLatestPrice(ctx context.Context, itemID uuid.UUID) (GetLatestPriceRow, error) {
+	row := q.db.QueryRowContext(ctx, getLatestPrice, itemID)
+	var i GetLatestPriceRow
+	err := row.Scan(&i.Price, &i.ItemID)
+	return i, err
 }
 
 const getPricebyID = `-- name: GetPricebyID :one
 SELECT Price
 FROM Prices
 WHERE Item_id = $1
+ORDER BY PriceDate DESC
 `
 
 func (q *Queries) GetPricebyID(ctx context.Context, itemID uuid.UUID) (float64, error) {
@@ -70,51 +43,4 @@ func (q *Queries) GetPricebyID(ctx context.Context, itemID uuid.UUID) (float64, 
 	var price float64
 	err := row.Scan(&price)
 	return price, err
-}
-
-const getWorstItems = `-- name: GetWorstItems :many
-SELECT Item_id,
-    Price,
-    Items.ItemName,
-    CAST (Items.DayChange AS NUMERIC(10, 2))
-FROM Prices
-    INNER JOIN Items ON Prices.Item_id = Items.Id
-ORDER BY Items.DayChange ASC,
-    PriceDate DESC
-LIMIT 5
-`
-
-type GetWorstItemsRow struct {
-	ItemID         uuid.UUID
-	Price          float64
-	Itemname       string
-	ItemsDaychange float64
-}
-
-func (q *Queries) GetWorstItems(ctx context.Context) ([]GetWorstItemsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getWorstItems)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetWorstItemsRow
-	for rows.Next() {
-		var i GetWorstItemsRow
-		if err := rows.Scan(
-			&i.ItemID,
-			&i.Price,
-			&i.Itemname,
-			&i.ItemsDaychange,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }

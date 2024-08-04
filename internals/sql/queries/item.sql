@@ -19,3 +19,18 @@ SELECT CAST (Prices.Price AS NUMERIC(10, 2))
 FROM Items
     LEFT JOIN Prices ON Items.Id = Prices.Item_id
 WHERE Itemname = $1;
+-- name: GetBestItems :many
+SELECT ItemName,
+    Id,
+    CAST (DayChange AS NUMERIC(10, 2))
+FROM Items
+WHERE DayChange IS NOT NULL
+ORDER BY DayChange DESC
+LIMIT 5;
+-- name: GetWorstItems :many
+SELECT ItemName,
+    Id,
+    CAST (DayChange AS NUMERIC(10, 2))
+FROM Items
+ORDER BY DayChange ASC
+LIMIT 5;
