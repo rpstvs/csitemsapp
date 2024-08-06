@@ -97,6 +97,8 @@ SELECT Itemname,
     Prices.Price
 FROM Items
     LEFT JOIN Prices ON Items.Id = Prices.Item_id
+ORDER BY PriceDate DESC
+Limit $1
 `
 
 type GetItemsRecordRow struct {
@@ -104,8 +106,8 @@ type GetItemsRecordRow struct {
 	Price    sql.NullString
 }
 
-func (q *Queries) GetItemsRecord(ctx context.Context) ([]GetItemsRecordRow, error) {
-	rows, err := q.db.QueryContext(ctx, getItemsRecord)
+func (q *Queries) GetItemsRecord(ctx context.Context, limit int32) ([]GetItemsRecordRow, error) {
+	rows, err := q.db.QueryContext(ctx, getItemsRecord, limit)
 	if err != nil {
 		return nil, err
 	}

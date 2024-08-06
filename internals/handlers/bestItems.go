@@ -8,7 +8,7 @@ import (
 )
 
 func GetItems(c *fiber.Ctx, db *database.Queries) error {
-	items, _ := db.GetItemsRecord(c.Context())
+	items, _ := db.GetItemsRecord(c.Context(), 3)
 
 	resp := []response{}
 
