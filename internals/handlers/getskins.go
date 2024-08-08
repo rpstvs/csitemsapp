@@ -8,9 +8,10 @@ import (
 )
 
 type response struct {
-	Itemname    string  `json:"itemname"`
-	Price       float64 `json:"price"`
-	PriceChange float64 `json:"pricechange"`
+	Itemname   string  `json:"itemname"`
+	Price      float64 `json:"price"`
+	DayChange  float64 `json:"daychange"`
+	WeekChange float64 `json:"weekchange"`
 }
 
 func GetSkins(c *fiber.Ctx, db *database.Queries) error {

@@ -36,3 +36,7 @@ SELECT ItemName,
 FROM Items
 ORDER BY DayChange ASC
 LIMIT 5;
+-- name: GetItemInfo :one
+SELECT *
+FROM Items
+WHERE Itemname = $1;

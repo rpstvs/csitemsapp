@@ -14,16 +14,18 @@ func ItemSearch(c *fiber.Ctx, db *database.Queries) error {
 		return err
 	}
 
-	itemId, err := db.GetItemByName(c.Context(), req.Itemname)
+	item, err := db.GetItemInfo(c.Context(), req.Itemname)
 
 	if err != nil {
 		return err
 	}
 
-	Price, _ := db.GetLatestPrice(c.Context(), itemId)
+	Price, _ := db.GetLatestPrice(c.Context(), item.ID)
 
 	return c.JSON(response{
-		Itemname: req.Itemname,
-		Price:    Price.Price,
+		Itemname:   req.Itemname,
+		Price:      Price.Price,
+		DayChange:  item.Daychange,
+		WeekChange: item.Weekchange,
 	})
 }

@@ -17,9 +17,9 @@ func HomePage(c *fiber.Ctx, db *database.Queries) error {
 	for _, item := range items {
 		price, _ := db.GetLatestPrice(c.Context(), item.ID)
 		Response = append(Response, response{
-			Itemname:    item.Itemname,
-			Price:       price.Price,
-			PriceChange: item.Daychange,
+			Itemname:  item.Itemname,
+			Price:     price.Price,
+			DayChange: item.Daychange,
 		})
 	}
 
@@ -32,9 +32,9 @@ func WorstItems(c *fiber.Ctx, db *database.Queries) error {
 	for _, item := range items {
 		price, _ := db.GetLatestPrice(c.Context(), item.ID)
 		Response = append(Response, response{
-			Itemname:    item.Itemname,
-			Price:       price.Price,
-			PriceChange: item.Daychange,
+			Itemname:  item.Itemname,
+			Price:     price.Price,
+			DayChange: item.Daychange,
 		})
 	}
 	return c.JSON(Response)
