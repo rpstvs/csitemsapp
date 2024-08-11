@@ -20,6 +20,7 @@ func HomePage(c *fiber.Ctx, db *database.Queries) error {
 			Itemname:  item.Itemname,
 			Price:     price.Price,
 			DayChange: item.Daychange,
+			ImageUrl:  item.Imageurl,
 		})
 	}
 
@@ -35,6 +36,7 @@ func WorstItems(c *fiber.Ctx, db *database.Queries) error {
 			Itemname:  item.Itemname,
 			Price:     price.Price,
 			DayChange: item.Daychange,
+			ImageUrl:  item.Imageurl,
 		})
 	}
 	return c.JSON(Response)

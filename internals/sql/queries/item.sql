@@ -24,7 +24,8 @@ WHERE Itemname = $1;
 -- name: GetBestItems :many
 SELECT ItemName,
     Id,
-    CAST (DayChange AS NUMERIC(10, 2))
+    CAST (DayChange AS NUMERIC(10, 2)),
+    ImageUrl
 FROM Items
 WHERE DayChange IS NOT NULL
 ORDER BY DayChange DESC
@@ -32,7 +33,8 @@ LIMIT 5;
 -- name: GetWorstItems :many
 SELECT ItemName,
     Id,
-    CAST (DayChange AS NUMERIC(10, 2))
+    CAST (DayChange AS NUMERIC(10, 2)),
+    ImageUrl
 FROM Items
 ORDER BY DayChange ASC
 LIMIT 5;

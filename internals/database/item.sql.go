@@ -15,7 +15,8 @@ import (
 const getBestItems = `-- name: GetBestItems :many
 SELECT ItemName,
     Id,
-    CAST (DayChange AS NUMERIC(10, 2))
+    CAST (DayChange AS NUMERIC(10, 2)),
+    ImageUrl
 FROM Items
 WHERE DayChange IS NOT NULL
 ORDER BY DayChange DESC
@@ -26,6 +27,7 @@ type GetBestItemsRow struct {
 	Itemname  string
 	ID        uuid.UUID
 	Daychange float64
+	Imageurl  string
 }
 
 func (q *Queries) GetBestItems(ctx context.Context) ([]GetBestItemsRow, error) {
@@ -37,7 +39,12 @@ func (q *Queries) GetBestItems(ctx context.Context) ([]GetBestItemsRow, error) {
 	var items []GetBestItemsRow
 	for rows.Next() {
 		var i GetBestItemsRow
-		if err := rows.Scan(&i.Itemname, &i.ID, &i.Daychange); err != nil {
+		if err := rows.Scan(
+			&i.Itemname,
+			&i.ID,
+			&i.Daychange,
+			&i.Imageurl,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -65,7 +72,7 @@ func (q *Queries) GetItemByName(ctx context.Context, itemname string) (uuid.UUID
 }
 
 const getItemInfo = `-- name: GetItemInfo :one
-SELECT id, itemname, daychange, weekchange
+SELECT id, itemname, daychange, weekchange, imageurl
 FROM Items
 WHERE Itemname = $1
 `
@@ -78,6 +85,7 @@ func (q *Queries) GetItemInfo(ctx context.Context, itemname string) (Item, error
 		&i.Itemname,
 		&i.Daychange,
 		&i.Weekchange,
+		&i.Imageurl,
 	)
 	return i, err
 }
@@ -177,7 +185,8 @@ func (q *Queries) GetPriceHistory(ctx context.Context, itemname string) (float64
 const getWorstItems = `-- name: GetWorstItems :many
 SELECT ItemName,
     Id,
-    CAST (DayChange AS NUMERIC(10, 2))
+    CAST (DayChange AS NUMERIC(10, 2)),
+    ImageUrl
 FROM Items
 ORDER BY DayChange ASC
 LIMIT 5
@@ -187,6 +196,7 @@ type GetWorstItemsRow struct {
 	Itemname  string
 	ID        uuid.UUID
 	Daychange float64
+	Imageurl  string
 }
 
 func (q *Queries) GetWorstItems(ctx context.Context) ([]GetWorstItemsRow, error) {
@@ -198,7 +208,12 @@ func (q *Queries) GetWorstItems(ctx context.Context) ([]GetWorstItemsRow, error)
 	var items []GetWorstItemsRow
 	for rows.Next() {
 		var i GetWorstItemsRow
-		if err := rows.Scan(&i.Itemname, &i.ID, &i.Daychange); err != nil {
+		if err := rows.Scan(
+			&i.Itemname,
+			&i.ID,
+			&i.Daychange,
+			&i.Imageurl,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

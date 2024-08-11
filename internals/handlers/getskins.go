@@ -12,6 +12,7 @@ type response struct {
 	Price      float64 `json:"price"`
 	DayChange  float64 `json:"daychange"`
 	WeekChange float64 `json:"weekchange"`
+	ImageUrl   string  `json:"imageurl"`
 }
 
 func GetSkins(c *fiber.Ctx, db *database.Queries) error {
