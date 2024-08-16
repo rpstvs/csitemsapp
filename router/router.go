@@ -35,7 +35,7 @@ func SetupRoutes(app *fiber.App, db *database.Queries) {
 		return handlers.GetPriceHistory(c, db)
 	})
 
-	skins.Post("/search", func(c *fiber.Ctx) error {
+	skins.Get("/search", func(c *fiber.Ctx) error {
 		return handlers.ItemSearch(c, db)
 	})
 
@@ -44,6 +44,10 @@ func SetupRoutes(app *fiber.App, db *database.Queries) {
 	})
 	skins.Get("/profile", auth.MiddlewareCookie("SkinsApp"), func(c *fiber.Ctx) error {
 		return handlers.Profile(c)
+	})
+
+	skins.Get("searchitem", func(c *fiber.Ctx) error {
+		return handlers.Suggestions(c, db)
 	})
 
 }

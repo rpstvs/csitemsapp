@@ -1,20 +1,29 @@
 package handlers
 
 import (
+	"fmt"
+	"log"
+	"net/url"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/rpstvs/csitemsapp/internals/database"
 )
 
 func ItemSearch(c *fiber.Ctx, db *database.Queries) error {
-	req := struct {
-		Itemname string `json:"itemname"`
-	}{}
+	query := c.Query("item")
 
-	if err := c.BodyParser(&req); err != nil {
-		return err
+	if query == "" {
+		return c.JSON([]string{}) // Return an empty list if no query is provided
 	}
 
-	item, err := db.GetItemInfo(c.Context(), req.Itemname)
+	itemSearched, err := url.QueryUnescape(query)
+
+	if err != nil {
+		log.Print(err)
+	}
+	fmt.Println(itemSearched)
+
+	item, err := db.GetItemInfo(c.Context(), itemSearched)
 
 	if err != nil {
 		return err
@@ -23,8 +32,9 @@ func ItemSearch(c *fiber.Ctx, db *database.Queries) error {
 	Price, _ := db.GetLatestPrice(c.Context(), item.ID)
 
 	return c.JSON(response{
-		Itemname:   req.Itemname,
+		Itemname:   item.Itemname,
 		Price:      Price.Price,
+		ImageUrl:   item.Imageurl,
 		DayChange:  item.Daychange,
 		WeekChange: item.Weekchange,
 	})

@@ -90,6 +90,35 @@ func (q *Queries) GetItemInfo(ctx context.Context, itemname string) (Item, error
 	return i, err
 }
 
+const getItemSuggestion = `-- name: GetItemSuggestion :many
+SELECT ItemName
+FROM Items
+WHERE ItemName LIKE $1
+`
+
+func (q *Queries) GetItemSuggestion(ctx context.Context, itemname string) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getItemSuggestion, itemname)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var itemname string
+		if err := rows.Scan(&itemname); err != nil {
+			return nil, err
+		}
+		items = append(items, itemname)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getItemsIds = `-- name: GetItemsIds :many
 SELECT Id
 FROM Items

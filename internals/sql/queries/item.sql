@@ -42,3 +42,7 @@ LIMIT 5;
 SELECT *
 FROM Items
 WHERE Itemname = $1;
+-- name: GetItemSuggestion :many
+SELECT ItemName
+FROM Items
+WHERE ItemName LIKE $1;
