@@ -18,7 +18,7 @@ SELECT ItemName,
     CAST (DayChange AS NUMERIC(10, 2)),
     ImageUrl
 FROM Items
-WHERE DayChange IS NOT NULL
+WHERE DayChange < 10
 ORDER BY DayChange DESC
 LIMIT 5
 `
@@ -198,17 +198,24 @@ func (q *Queries) GetNameById(ctx context.Context, id uuid.UUID) (string, error)
 }
 
 const getPriceHistory = `-- name: GetPriceHistory :one
-SELECT CAST (Prices.Price AS NUMERIC(10, 2))
+SELECT CAST (Prices.Price AS NUMERIC(10, 2)),
+    Prices.PriceDate
 FROM Items
     LEFT JOIN Prices ON Items.Id = Prices.Item_id
 WHERE Itemname = $1
+LIMIT 7
 `
 
-func (q *Queries) GetPriceHistory(ctx context.Context, itemname string) (float64, error) {
+type GetPriceHistoryRow struct {
+	PricesPrice float64
+	Pricedate   sql.NullTime
+}
+
+func (q *Queries) GetPriceHistory(ctx context.Context, itemname string) (GetPriceHistoryRow, error) {
 	row := q.db.QueryRowContext(ctx, getPriceHistory, itemname)
-	var prices_price float64
-	err := row.Scan(&prices_price)
-	return prices_price, err
+	var i GetPriceHistoryRow
+	err := row.Scan(&i.PricesPrice, &i.Pricedate)
+	return i, err
 }
 
 const getWorstItems = `-- name: GetWorstItems :many
@@ -217,6 +224,7 @@ SELECT ItemName,
     CAST (DayChange AS NUMERIC(10, 2)),
     ImageUrl
 FROM Items
+WHERE DayChange > -10
 ORDER BY DayChange ASC
 LIMIT 5
 `

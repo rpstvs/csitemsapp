@@ -18,7 +18,7 @@ func GetPriceHistory(c *fiber.Ctx, db *database.Queries) error {
 	}
 
 	itemHistory, _ := db.GetPriceHistory(c.Context(), "Chroma Case")
-	skin.Price = itemHistory
+	skin.Price = itemHistory.PricesPrice
 
 	return c.JSON(skin)
 }

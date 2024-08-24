@@ -17,17 +17,19 @@ FROM Items
 ORDER BY PriceDate DESC
 Limit $1;
 -- name: GetPriceHistory :one
-SELECT CAST (Prices.Price AS NUMERIC(10, 2))
+SELECT CAST (Prices.Price AS NUMERIC(10, 2)),
+    Prices.PriceDate
 FROM Items
     LEFT JOIN Prices ON Items.Id = Prices.Item_id
-WHERE Itemname = $1;
+WHERE Itemname = $1
+LIMIT 7;
 -- name: GetBestItems :many
 SELECT ItemName,
     Id,
     CAST (DayChange AS NUMERIC(10, 2)),
     ImageUrl
 FROM Items
-WHERE DayChange IS NOT NULL
+WHERE DayChange < 10
 ORDER BY DayChange DESC
 LIMIT 5;
 -- name: GetWorstItems :many
@@ -36,6 +38,7 @@ SELECT ItemName,
     CAST (DayChange AS NUMERIC(10, 2)),
     ImageUrl
 FROM Items
+WHERE DayChange > -10
 ORDER BY DayChange ASC
 LIMIT 5;
 -- name: GetItemInfo :one
