@@ -16,18 +16,20 @@ const getBestItems = `-- name: GetBestItems :many
 SELECT ItemName,
     Id,
     CAST (DayChange AS NUMERIC(10, 2)),
+    CAST (WeekChange AS NUMERIC(10, 2)),
     ImageUrl
 FROM Items
-WHERE DayChange < 10
+WHERE DayChange < 30
 ORDER BY DayChange DESC
 LIMIT 5
 `
 
 type GetBestItemsRow struct {
-	Itemname  string
-	ID        uuid.UUID
-	Daychange float64
-	Imageurl  string
+	Itemname   string
+	ID         uuid.UUID
+	Daychange  float64
+	Weekchange float64
+	Imageurl   string
 }
 
 func (q *Queries) GetBestItems(ctx context.Context) ([]GetBestItemsRow, error) {
@@ -43,6 +45,56 @@ func (q *Queries) GetBestItems(ctx context.Context) ([]GetBestItemsRow, error) {
 			&i.Itemname,
 			&i.ID,
 			&i.Daychange,
+			&i.Weekchange,
+			&i.Imageurl,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getBestItemsWeek = `-- name: GetBestItemsWeek :many
+SELECT ItemName,
+    Id,
+    CAST (DayChange AS NUMERIC(10, 2)),
+    CAST (WeekChange AS NUMERIC(10, 2)),
+    ImageUrl
+FROM Items
+WHERE WeekChange < 20
+ORDER BY WeekChange DESC
+LIMIT 5
+`
+
+type GetBestItemsWeekRow struct {
+	Itemname   string
+	ID         uuid.UUID
+	Daychange  float64
+	Weekchange float64
+	Imageurl   string
+}
+
+func (q *Queries) GetBestItemsWeek(ctx context.Context) ([]GetBestItemsWeekRow, error) {
+	rows, err := q.db.QueryContext(ctx, getBestItemsWeek)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetBestItemsWeekRow
+	for rows.Next() {
+		var i GetBestItemsWeekRow
+		if err := rows.Scan(
+			&i.Itemname,
+			&i.ID,
+			&i.Daychange,
+			&i.Weekchange,
 			&i.Imageurl,
 		); err != nil {
 			return nil, err
@@ -224,7 +276,7 @@ SELECT ItemName,
     CAST (DayChange AS NUMERIC(10, 2)),
     ImageUrl
 FROM Items
-WHERE DayChange > -10
+WHERE DayChange > -30
 ORDER BY DayChange ASC
 LIMIT 5
 `
@@ -249,6 +301,55 @@ func (q *Queries) GetWorstItems(ctx context.Context) ([]GetWorstItemsRow, error)
 			&i.Itemname,
 			&i.ID,
 			&i.Daychange,
+			&i.Imageurl,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getWorstItemsWeek = `-- name: GetWorstItemsWeek :many
+SELECT ItemName,
+    Id,
+    CAST (DayChange AS NUMERIC(10, 2)),
+    CAST (WeekChange AS NUMERIC(10, 2)),
+    ImageUrl
+FROM Items
+WHERE WeekChange > -20
+ORDER BY DayChange DESC
+LIMIT 5
+`
+
+type GetWorstItemsWeekRow struct {
+	Itemname   string
+	ID         uuid.UUID
+	Daychange  float64
+	Weekchange float64
+	Imageurl   string
+}
+
+func (q *Queries) GetWorstItemsWeek(ctx context.Context) ([]GetWorstItemsWeekRow, error) {
+	rows, err := q.db.QueryContext(ctx, getWorstItemsWeek)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetWorstItemsWeekRow
+	for rows.Next() {
+		var i GetWorstItemsWeekRow
+		if err := rows.Scan(
+			&i.Itemname,
+			&i.ID,
+			&i.Daychange,
+			&i.Weekchange,
 			&i.Imageurl,
 		); err != nil {
 			return nil, err

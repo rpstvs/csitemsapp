@@ -7,7 +7,7 @@ import (
 	"github.com/rpstvs/csitemsapp/internals/database"
 )
 
-func HomePage(c *fiber.Ctx, db *database.Queries) error {
+func GetBestItemsDay(c *fiber.Ctx, db *database.Queries) error {
 	items, err := db.GetBestItems(c.Context())
 	if err != nil {
 		log.Print(err)

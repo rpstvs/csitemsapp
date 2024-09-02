@@ -22,7 +22,7 @@ func GetSkins(c *fiber.Ctx, db *database.Queries) error {
 		log.Printf("Item not found")
 	}
 
-	price, err := db.GetPricebyID(c.Context(), id)
+	price, _ := db.GetPricebyID(c.Context(), id)
 
 	resp := &response{
 		Itemname: "Chroma Case",

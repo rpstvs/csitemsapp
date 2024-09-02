@@ -27,9 +27,10 @@ LIMIT 7;
 SELECT ItemName,
     Id,
     CAST (DayChange AS NUMERIC(10, 2)),
+    CAST (WeekChange AS NUMERIC(10, 2)),
     ImageUrl
 FROM Items
-WHERE DayChange < 10
+WHERE DayChange < 30
 ORDER BY DayChange DESC
 LIMIT 5;
 -- name: GetWorstItems :many
@@ -38,7 +39,7 @@ SELECT ItemName,
     CAST (DayChange AS NUMERIC(10, 2)),
     ImageUrl
 FROM Items
-WHERE DayChange > -10
+WHERE DayChange > -30
 ORDER BY DayChange ASC
 LIMIT 5;
 -- name: GetItemInfo :one
@@ -49,3 +50,23 @@ WHERE Itemname = $1;
 SELECT ItemName
 FROM Items
 WHERE ItemName LIKE $1;
+-- name: GetBestItemsWeek :many
+SELECT ItemName,
+    Id,
+    CAST (DayChange AS NUMERIC(10, 2)),
+    CAST (WeekChange AS NUMERIC(10, 2)),
+    ImageUrl
+FROM Items
+WHERE WeekChange < 20
+ORDER BY WeekChange DESC
+LIMIT 5;
+-- name: GetWorstItemsWeek :many
+SELECT ItemName,
+    Id,
+    CAST (DayChange AS NUMERIC(10, 2)),
+    CAST (WeekChange AS NUMERIC(10, 2)),
+    ImageUrl
+FROM Items
+WHERE WeekChange > -20
+ORDER BY DayChange DESC
+LIMIT 5;

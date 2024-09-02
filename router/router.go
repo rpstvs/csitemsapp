@@ -12,7 +12,7 @@ import (
 func SetupRoutes(app *fiber.App, db *database.Queries) {
 	app.Use(cors.New())
 	app.Get("/", func(c *fiber.Ctx) error {
-		return handlers.HomePage(c, db)
+		return handlers.GetBestItemsDay(c, db)
 	})
 
 	api := app.Group("/api", logger.New())
@@ -24,7 +24,11 @@ func SetupRoutes(app *fiber.App, db *database.Queries) {
 	})
 
 	skins.Get("/best", func(c *fiber.Ctx) error {
-		return handlers.HomePage(c, db)
+		return handlers.GetBestItemsDay(c, db)
+	})
+
+	skins.Get("/best/week", func(c *fiber.Ctx) error {
+		return handlers.GetBestItemsWeek(c, db)
 	})
 
 	skins.Get("/worst", func(c *fiber.Ctx) error {
