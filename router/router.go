@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/rpstvs/csitemsapp/internals/auth"
 	"github.com/rpstvs/csitemsapp/internals/database"
-	"github.com/rpstvs/csitemsapp/internals/handlers"
+	handlers "github.com/rpstvs/csitemsapp/internals/handlers/items"
 )
 
 func SetupRoutes(app *fiber.App, db *database.Queries) {

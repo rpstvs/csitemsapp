@@ -30,7 +30,7 @@ SELECT ItemName,
     CAST (WeekChange AS NUMERIC(10, 2)),
     ImageUrl
 FROM Items
-WHERE DayChange < 30
+WHERE DayChange < 40
 ORDER BY DayChange DESC
 LIMIT 5;
 -- name: GetWorstItems :many
@@ -39,7 +39,7 @@ SELECT ItemName,
     CAST (DayChange AS NUMERIC(10, 2)),
     ImageUrl
 FROM Items
-WHERE DayChange > -30
+WHERE DayChange > -40
 ORDER BY DayChange ASC
 LIMIT 5;
 -- name: GetItemInfo :one
