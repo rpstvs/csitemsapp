@@ -7,6 +7,7 @@ import (
 	"github.com/rpstvs/csitemsapp/internals/auth"
 	"github.com/rpstvs/csitemsapp/internals/database"
 	handlers "github.com/rpstvs/csitemsapp/internals/handlers/items"
+	handler "github.com/rpstvs/csitemsapp/internals/handlers/users"
 )
 
 func SetupRoutes(app *fiber.App, db *database.Queries) {
@@ -17,6 +18,12 @@ func SetupRoutes(app *fiber.App, db *database.Queries) {
 
 	api := app.Group("/api", logger.New())
 
+	users := app.Group("/api", logger.New())
+
+	users.Post("/create", func(c *fiber.Ctx) error {
+		return handler.CreateUser(c, db)
+
+	})
 	skins := api.Group("/skins")
 
 	skins.Get("/", func(c *fiber.Ctx) error {
